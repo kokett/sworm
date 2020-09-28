@@ -2,9 +2,14 @@ import random, sys
 import pygame
 import config
 
+def renderScore(screen, score):
+    font = pygame.font.SysFont(None, 26)
+    textSurface = font.render(f"score: {score}", True, config.colorDarkGreen)
+    screen.blit(textSurface, (0, 0))
+
 # renderBackground 渲染背景
 def renderBackground(screen, color):
-    return screen.fill(config.colorBlack)
+    return pygame.draw.rect(screen, config.colorBlack, (0, 0, config.winWidth, config.winHeight))
 
 # renderFood 渲染食物
 def renderFood(screen, foodCoord):
@@ -78,9 +83,9 @@ def isEatFood(foodCoord, snakeCoords):
 def isGameover(snakeCoords):
     snakeHeaderCoord = snakeCoords[0]
     # 超越边界
-    if snakeHeaderCoord['x'] < -1 or snakeHeaderCoord['x'] > config.mapWith:
+    if snakeHeaderCoord['x'] <= -1 or snakeHeaderCoord['x'] >= config.mapWith:
         return True
-    if snakeHeaderCoord['y'] < -1 or snakeHeaderCoord['y'] > config.mapHeight:
+    if snakeHeaderCoord['y'] <= -1 or snakeHeaderCoord['y'] >= config.mapHeight:
         return True
     # 身体相撞
     for snakeBodyCoord in snakeCoords[1:]:
@@ -93,11 +98,13 @@ def gameExit():
     return pygame.quit()
 
 def main():
-    pygame.init() 
+    pygame.init()
+    pygame.font.init()
+
     snake_speed_clock = pygame.time.Clock()
     pygame.display.set_caption(config.winTitle)
 
-    screen = pygame.display.set_mode((config.winWidth, config.winHeight)) 
+    screen = pygame.display.set_mode((config.winWidth, config.winHeight))
 
     score = 0
     direction = 'right'
@@ -127,6 +134,7 @@ def main():
         renderBackground(screen, config.colorBlack)
         renderSworm(screen, snakeCoords)
         renderFood(screen, foodCoord)
+        renderScore(screen, score)
 
         # 更新图像到显示设备
         snake_speed_clock.tick(config.snakeSpeed)
